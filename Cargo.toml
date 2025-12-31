@@ -24,7 +24,13 @@ log = "0.4.27"
 
 # You only need serde if you want app persistence:
 serde = { version = "1.0.219", features = ["derive"] }
+typetag = "0.2"
+
+# Quantum circuit evaluation
 qiskit = { git = "https://github.com/Qiskit/qiskit-rs", version = "0.0.0" }
+
+# Math rendering for circuits and tooltips
+# TODO typst
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

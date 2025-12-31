@@ -1,20 +1,16 @@
+use crate::circuit::VisualCircuit;
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct QuirkApp {
-    // Example stuff:
-    label: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+    main_circuit: VisualCircuit,
 }
 
 impl Default for QuirkApp {
     fn default() -> Self {
         Self {
-            // Example stuff:
-            label: "Hello World!".to_owned(),
-            value: 2.7,
+            main_circuit: VisualCircuit::default()
         }
     }
 }
@@ -65,33 +61,58 @@ impl eframe::App for QuirkApp {
             });
         });
 
-        egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("eframe template");
-
-            ui.horizontal(|ui| {
-                ui.label("Write something: ");
-                ui.text_edit_singleline(&mut self.label);
+        egui::CentralPanel::default()
+            .frame(egui::Frame::default()
+                .inner_margin(0.0)
+                .fill(ctx.style().visuals.panel_fill))
+            .show(ctx, |ui| {
+                // TODO remove this scroll
+                egui::ScrollArea::both().show(ui, |ui| {
+                    ui.vertical(|ui| {
+                        toolbox(ui);
+                        grid(ui);
+                    });
+                });
             });
 
-            ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
-            if ui.button("Increment").clicked() {
-                self.value += 1.0;
-            }
+        egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
+            ui.columns_const(|[left, right]| {
+                powered_by_egui_and_eframe(left);
 
-            ui.separator();
-
-            ui.add(egui::github_link_file!(
-                "https://github.com/emilk/eframe_template/blob/main/",
-                "Source code."
-            ));
-
-            ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                powered_by_egui_and_eframe(ui);
-                egui::warn_if_debug_build(ui);
+                right.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    egui::warn_if_debug_build(ui);
+                    ui.add(egui::github_link_file!(
+                        "https://github.com/s5bug/quirk/",
+                        "Source code."
+                    ));
+                });
             });
         });
     }
+}
+
+fn toolbox(ui: &mut egui::Ui) {
+    // TODO make this a horizontal scroll
+    let mut frame = egui::Frame::new();
+    frame.fill = ui.visuals().extreme_bg_color;
+    frame.inner_margin = ui.style().spacing.window_margin;
+    frame.show(ui, |ui| {
+        ui.heading("Toolbox");
+        ui.take_available_width();
+    });
+}
+
+fn grid(ui: &mut egui::Ui) {
+    // TODO make this a both scroll
+    let mut frame = egui::Frame::new();
+    frame.inner_margin = ui.style().spacing.window_margin;
+    frame.show(ui, |ui| {
+        egui::Grid::new("main_circuit_grid").show(ui, |ui| {
+            ui.label("|0>");
+            ui.label("-");
+            ui.end_row();
+        });
+    });
 }
 
 fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
