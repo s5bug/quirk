@@ -1,4 +1,4 @@
-use qiskit_rs::{QiskitError, QuantumCircuit};
+// use qiskit_rs::{QiskitError, QuantumCircuit};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct VisualCircuit {
@@ -27,7 +27,7 @@ pub trait VisualGate {
     // TODO functions for rendering
 
     // FIXME qiskit-cext broken on mac
-    fn apply_to_circuit(&self, top: u32, qc: &mut QuantumCircuit) -> QiskitError;
+    // fn apply_to_circuit(&self, top: u32, qc: &mut QuantumCircuit) -> QiskitError;
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -39,7 +39,7 @@ impl VisualGate for Rx {
         1
     }
 
-    fn apply_to_circuit(&self, top: u32, qc: &mut QuantumCircuit) -> QiskitError {
-        qc.rx(self.theta, top)
-    }
+    // fn apply_to_circuit(&self, top: u32, qc: &mut QuantumCircuit) -> QiskitError {
+    //     qc.rx(self.theta, top)
+    // }
 }

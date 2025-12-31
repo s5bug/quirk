@@ -66,12 +66,9 @@ impl eframe::App for QuirkApp {
                 .inner_margin(0.0)
                 .fill(ctx.style().visuals.panel_fill))
             .show(ctx, |ui| {
-                // TODO remove this scroll
-                egui::ScrollArea::both().show(ui, |ui| {
-                    ui.vertical(|ui| {
-                        toolbox(ui);
-                        grid(ui);
-                    });
+                ui.vertical(|ui| {
+                    toolbox(ui);
+                    grid(ui);
                 });
             });
 
@@ -82,8 +79,8 @@ impl eframe::App for QuirkApp {
                 right.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                     egui::warn_if_debug_build(ui);
                     ui.add(egui::github_link_file!(
-                        "https://github.com/s5bug/quirk/",
-                        "Source code."
+                        "https://github.com/s5bug/quirk/blob/main/",
+                        "Source code"
                     ));
                 });
             });
@@ -92,25 +89,41 @@ impl eframe::App for QuirkApp {
 }
 
 fn toolbox(ui: &mut egui::Ui) {
-    // TODO make this a horizontal scroll
-    let mut frame = egui::Frame::new();
-    frame.fill = ui.visuals().extreme_bg_color;
-    frame.inner_margin = ui.style().spacing.window_margin;
-    frame.show(ui, |ui| {
-        ui.heading("Toolbox");
-        ui.take_available_width();
+    egui::ScrollArea::horizontal().show(ui, |ui| {
+        let mut frame = egui::Frame::new();
+        frame.fill = ui.visuals().extreme_bg_color;
+        frame.inner_margin = ui.style().spacing.window_margin;
+        frame.show(ui, |ui| {
+            ui.heading("Toolbox");
+            ui.take_available_width();
+        });
     });
 }
 
 fn grid(ui: &mut egui::Ui) {
-    // TODO make this a both scroll
-    let mut frame = egui::Frame::new();
-    frame.inner_margin = ui.style().spacing.window_margin;
-    frame.show(ui, |ui| {
-        egui::Grid::new("main_circuit_grid").show(ui, |ui| {
-            ui.label("|0>");
-            ui.label("-");
-            ui.end_row();
+    egui::ScrollArea::both().show(ui, |ui| {
+        let mut frame = egui::Frame::new();
+        frame.inner_margin = ui.style().spacing.window_margin;
+        frame.show(ui, |ui| {
+            egui::Grid::new("main_circuit_grid")
+                .min_col_width(64f32)
+                .min_row_height(64f32)
+                .show(ui, |ui| {
+                    ui.label("|0>");
+                    ui.label("-");
+                    ui.label("-");
+                    ui.end_row();
+
+                    ui.label("|1>");
+                    ui.label("-");
+                    ui.label("-");
+                    ui.end_row();
+
+                    ui.label("|+>");
+                    ui.label("-");
+                    ui.label("-");
+                    ui.end_row();
+                });
         });
     });
 }
