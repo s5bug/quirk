@@ -1,4 +1,4 @@
-use crate::circuit::VisualCircuit;
+use crate::circuit::{Rx, VisualCircuit, VisualColumn, VisualGateFactory};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -9,8 +9,12 @@ pub struct QuirkApp {
 
 impl Default for QuirkApp {
     fn default() -> Self {
+        let mut default_circuit = VisualCircuit::default();
+        default_circuit.columns.push(VisualColumn {
+            gates: vec![Some(Box::new(Rx { theta: 1f64 }))]
+        });
         Self {
-            main_circuit: VisualCircuit::default()
+            main_circuit: default_circuit
         }
     }
 }
@@ -68,7 +72,7 @@ impl eframe::App for QuirkApp {
             .show(ctx, |ui| {
                 ui.vertical(|ui| {
                     toolbox(ui);
-                    grid(ui);
+                    grid(self, ui);
                 });
             });
 
@@ -89,28 +93,43 @@ impl eframe::App for QuirkApp {
 }
 
 fn toolbox(ui: &mut egui::Ui) {
-    egui::ScrollArea::horizontal().show(ui, |ui| {
+    egui::ScrollArea::horizontal().id_salt("toolbox_scroll").show(ui, |ui| {
         let mut frame = egui::Frame::new();
         frame.fill = ui.visuals().extreme_bg_color;
         frame.inner_margin = ui.style().spacing.window_margin;
         frame.show(ui, |ui| {
             ui.heading("Toolbox");
             ui.take_available_width();
+
+            egui::Grid::new("toolbox_grid")
+                .min_col_width(40f32)
+                .min_row_height(40f32)
+                .spacing([8f32, 8f32])
+                .show(ui, |ui| {
+                    egui::Frame::new().show(ui, Rx::show);
+                    egui::Frame::new().show(ui, Rx::show);
+                    ui.end_row();
+
+                    egui::Frame::new().show(ui, Rx::show);
+                    egui::Frame::new().show(ui, Rx::show);
+                    ui.end_row();
+                })
         });
     });
 }
 
-fn grid(ui: &mut egui::Ui) {
-    egui::ScrollArea::both().show(ui, |ui| {
+fn grid(app: &mut QuirkApp, ui: &mut egui::Ui) {
+    egui::ScrollArea::both().id_salt("grid_scroll").show(ui, |ui| {
         let mut frame = egui::Frame::new();
         frame.inner_margin = ui.style().spacing.window_margin;
         frame.show(ui, |ui| {
             egui::Grid::new("main_circuit_grid")
-                .min_col_width(64f32)
-                .min_row_height(64f32)
+                .min_col_width(40f32)
+                .min_row_height(40f32)
+                .spacing([8f32, 8f32])
                 .show(ui, |ui| {
                     ui.label("|0>");
-                    ui.label("-");
+                    app.main_circuit.columns[0].gates[0].as_mut().unwrap().show(ui);
                     ui.label("-");
                     ui.end_row();
 
@@ -125,6 +144,7 @@ fn grid(ui: &mut egui::Ui) {
                     ui.end_row();
                 });
         });
+        ui.take_available_width();
     });
 }
 
