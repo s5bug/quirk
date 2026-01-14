@@ -2485,15 +2485,15 @@ dependencies = [
 [[package]]
 name = "qiskit"
 version = "0.0.0"
-source = "git+https://github.com/Qiskit/qiskit-rs#fa2405d4ccae15f40b0f71ac52a8855859017a4a"
+source = "git+https://github.com/Qiskit/qiskit-rs#fafa1289fc642fdb9dd10b243fec2e8e82c084e3"
 dependencies = [
  "qiskit-sys",
 ]
 
 [[package]]
 name = "qiskit-sys"
-version = "2.2.3"
-source = "git+https://github.com/Qiskit/qiskit-rs#fa2405d4ccae15f40b0f71ac52a8855859017a4a"
+version = "2.3.0"
+source = "git+https://github.com/Qiskit/qiskit-rs#fafa1289fc642fdb9dd10b243fec2e8e82c084e3"
 dependencies = [
  "bindgen",
  "git2",
